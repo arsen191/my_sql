@@ -14,7 +14,7 @@ CREATE TABLE users (
     group_id BIGINT UNSIGNED DEFAULT null,
 	
     INDEX users_firstname_lastname_idx(firstname, lastname)
-) COMMENT 'пользователи';
+) COMMENT 'РїРѕР»СЊР·РѕРІР°С‚РµР»Рё';
 
 
 DROP TABLE IF EXISTS `profiles`;
@@ -29,7 +29,7 @@ CREATE TABLE `profiles` (
     FOREIGN KEY (user_id) REFERENCES users(id)
     ON UPDATE CASCADE
     ON DELETE RESTRICT
-) COMMENT 'профили';
+) COMMENT 'РїСЂРѕС„РёР»Рё';
 
 
 DROP TABLE IF EXISTS faculties;
@@ -37,7 +37,7 @@ CREATE TABLE faculties (
 	id SERIAL,
 	name ENUM('Python', 'Java', 'Swift', 'C#', 'C++', 'Web development', 'Golang', 'Kotlin', 'Game development'),
 	description TEXT
-) COMMENT 'факультеты';
+) COMMENT 'С„Р°РєСѓР»СЊС‚РµС‚С‹';
 
 
 DROP TABLE IF EXISTS courses;
@@ -54,7 +54,7 @@ CREATE TABLE courses (
 	
 	FOREIGN KEY (teacher_id) REFERENCES users(id),
 	FOREIGN KEY (fac_id) REFERENCES faculties(id)
-) COMMENT 'курсы';
+) COMMENT 'РєСѓСЂСЃС‹';
 
 
 DROP TABLE IF EXISTS messages;
@@ -67,23 +67,23 @@ CREATE TABLE messages (
 
     FOREIGN KEY (from_user_id) REFERENCES users(id),
     FOREIGN KEY (to_user_id) REFERENCES users(id)
-) COMMENT 'сообщения';
+) COMMENT 'СЃРѕРѕР±С‰РµРЅРёСЏ';
 
 
 DROP TABLE IF EXISTS media_types;
 CREATE TABLE media_types (
 	id SERIAL,
-	name ENUM('фото', 'видео', 'аудио'),
+	name ENUM('С„РѕС‚Рѕ', 'РІРёРґРµРѕ', 'Р°СѓРґРёРѕ'),
 	created_at DATETIME DEFAULT NOW()
-) COMMENT 'тип медиафайла';
+) COMMENT 'С‚РёРї РјРµРґРёР°С„Р°Р№Р»Р°';
 
 
 DROP TABLE IF EXISTS media_types;
 CREATE TABLE media_types (
 	id SERIAL,
-	name ENUM('фото', 'видео', 'документ'),
+	name ENUM('С„РѕС‚Рѕ', 'РІРёРґРµРѕ', 'РґРѕРєСѓРјРµРЅС‚'),
 	created_at DATETIME DEFAULT NOW()
-) COMMENT 'тип медиафайла';
+) COMMENT 'С‚РёРї РјРµРґРёР°С„Р°Р№Р»Р°';
 
 
 DROP TABLE IF EXISTS media;
@@ -91,14 +91,14 @@ CREATE TABLE media (
 	id SERIAL,
 	media_type_id BIGINT UNSIGNED NOT NULL,
 	user_id BIGINT UNSIGNED NOT NULL,
-	filename VARCHAR(255) COMMENT 'хранение пути к файлу на отдельном диске, чтобы разгрузить базу',
+	filename VARCHAR(255) COMMENT 'С…СЂР°РЅРµРЅРёРµ РїСѓС‚Рё Рє С„Р°Р№Р»Сѓ РЅР° РѕС‚РґРµР»СЊРЅРѕРј РґРёСЃРєРµ, С‡С‚РѕР±С‹ СЂР°Р·РіСЂСѓР·РёС‚СЊ Р±Р°Р·Сѓ',
 	`size` INT,
 	created_at DATETIME DEFAULT NOW(),
 	updated_at DATETIME ON UPDATE NOW(),
 	
 	FOREIGN KEY (user_id) REFERENCES users(id),
 	FOREIGN KEY (media_type_id) REFERENCES media_types(id)
-) COMMENT 'медиа';
+) COMMENT 'РјРµРґРёР°';
 
 
 DROP TABLE IF EXISTS `groups`;
@@ -109,7 +109,7 @@ CREATE TABLE `groups` (
 	
 	INDEX (group_name),
 	FOREIGN KEY (faculty) REFERENCES faculties(id)
-) COMMENT 'группы учащихся';
+) COMMENT 'РіСЂСѓРїРїС‹ СѓС‡Р°С‰РёС…СЃСЏ';
 
 
 ALTER TABLE users 
@@ -124,7 +124,7 @@ foreign key (group_id) references `groups`(id);
 DROP TABLE IF EXISTS comments;
 CREATE TABLE comments (
 	id SERIAL,
-	media_id BIGINT UNSIGNED NOT NULL, -- ссылка на видеоурок, к которому будут оставляться комменты
+	media_id BIGINT UNSIGNED NOT NULL, -- СЃСЃС‹Р»РєР° РЅР° РІРёРґРµРѕСѓСЂРѕРє, Рє РєРѕС‚РѕСЂРѕРјСѓ Р±СѓРґСѓС‚ РѕСЃС‚Р°РІР»СЏС‚СЊСЃСЏ РєРѕРјРјРµРЅС‚С‹
 	user_id BIGINT UNSIGNED NOT NULL,
 	body TEXT,
 	
@@ -143,7 +143,7 @@ CREATE TABLE likes (
 	
 	FOREIGN KEY (user_id) REFERENCES users(id),
 	FOREIGN KEY (comment_id) REFERENCES comments(id)
-) COMMENT 'спасибо!';
+) COMMENT 'СЃРїР°СЃРёР±Рѕ!';
 
 
 drop table if exists courses_media;
@@ -155,11 +155,3 @@ create table courses_media (
 	foreign key (course_id) references courses(id),
 	foreign key (media_id) references media(id)
 );
-
-
-
-
-
-
-
-

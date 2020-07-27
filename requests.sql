@@ -1,4 +1,4 @@
-/*Представление - выборка студентов по группам обучения*/
+/*РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ - РІС‹Р±РѕСЂРєР° СЃС‚СѓРґРµРЅС‚РѕРІ РїРѕ РіСЂСѓРїРїР°Рј РѕР±СѓС‡РµРЅРёСЏ*/
 CREATE OR REPLACE VIEW v_group AS
 SELECT u.firstname, u.lastname, u.email, u.phone, g.group_name, f.name, g.id 
 FROM users u 
@@ -6,25 +6,25 @@ JOIN `groups` g ON u.group_id = g.id
 JOIN faculties f ON g.faculty = f.id 
 WHERE g.id = 1;
 
-/*выборка данных из представления*/
+/*РІС‹Р±РѕСЂРєР° РґР°РЅРЅС‹С… РёР· РїСЂРµРґСЃС‚Р°РІР»РµРЅРёСЏ*/
 SELECT CONCAT(firstname, ' ', lastname) AS full_name
 FROM v_group; 
 
 
-/*триггер на проверку даты рождения*/
+/*С‚СЂРёРіРіРµСЂ РЅР° РїСЂРѕРІРµСЂРєСѓ РґР°С‚С‹ СЂРѕР¶РґРµРЅРёСЏ*/
 DROP TRIGGER IF EXISTS check_birthday;
 CREATE TRIGGER check_birthday BEFORE INSERT ON profiles
 FOR EACH ROW
 BEGIN
 	IF NEW.birthday >= CURRENT_DATE() THEN 
-	SIGNAL SQLSTATE '45000' SET message_text = 'День рождения не должен превышать текущую дату!';
+	SIGNAL SQLSTATE '45000' SET message_text = 'Р”РµРЅСЊ СЂРѕР¶РґРµРЅРёСЏ РЅРµ РґРѕР»Р¶РµРЅ РїСЂРµРІС‹С€Р°С‚СЊ С‚РµРєСѓС‰СѓСЋ РґР°С‚Сѓ!';
 	END IF;
 END;
 
 
-/*процедура для создания диалогов*/
+/*РїСЂРѕС†РµРґСѓСЂР° РґР»СЏ СЃРѕР·РґР°РЅРёСЏ РґРёР°Р»РѕРіРѕРІ*/
 DROP PROCEDURE IF EXISTS dialogs;
-CREATE PROCEDURE dialogs(who BIGINT, with_who BIGINT) -- использовал BIGINT, так как индекс в таблице users имеет этот тип
+CREATE PROCEDURE dialogs(who BIGINT, with_who BIGINT) -- РёСЃРїРѕР»СЊР·РѕРІР°Р» BIGINT, С‚Р°Рє РєР°Рє РёРЅРґРµРєСЃ РІ С‚Р°Р±Р»РёС†Рµ users РёРјРµРµС‚ СЌС‚РѕС‚ С‚РёРї
 BEGIN
 	SELECT CONCAT(u.firstname, ' ', u.lastname) AS intiator_name, CONCAT(u2.firstname, ' ', u2.lastname) AS target_name, body 
 	FROM messages m 
@@ -34,12 +34,12 @@ BEGIN
 	ORDER BY m.created_at DESC;
 END;
 
-/*вызов диалога между пользователем с идентификатором 1 и пользователя 11*/
+/*РІС‹Р·РѕРІ РґРёР°Р»РѕРіР° РјРµР¶РґСѓ РїРѕР»СЊР·РѕРІР°С‚РµР»РµРј СЃ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂРѕРј 1 Рё РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ 11*/
 CALL dialogs(1, 11);
 
 
 
-/*представление страницы профиля*/
+/*РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ СЃС‚СЂР°РЅРёС†С‹ РїСЂРѕС„РёР»СЏ*/
 CREATE OR REPLACE VIEW v_user_data AS
 	SELECT CONCAT(u.firstname, ' ', u.lastname) AS full_name, p.hometown, u.email, 
 		CASE p.gender 
@@ -55,17 +55,17 @@ CREATE OR REPLACE VIEW v_user_data AS
 	WHERE u.id = 1;
 
 
-/*при открытии страницы профиля отображаем всю информацию о нем*/
+/*РїСЂРё РѕС‚РєСЂС‹С‚РёРё СЃС‚СЂР°РЅРёС†С‹ РїСЂРѕС„РёР»СЏ РѕС‚РѕР±СЂР°Р¶Р°РµРј РІСЃСЋ РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ РЅРµРј*/
 SELECT full_name, hometown, email, gen, phone, photo_id, group_name 
 FROM v_user_data
 GROUP BY full_name;
 
 
-/*при открытии страницы курсов студента в профиле отображаем купленные им курсы*/
+/*РїСЂРё РѕС‚РєСЂС‹С‚РёРё СЃС‚СЂР°РЅРёС†С‹ РєСѓСЂСЃРѕРІ СЃС‚СѓРґРµРЅС‚Р° РІ РїСЂРѕС„РёР»Рµ РѕС‚РѕР±СЂР°Р¶Р°РµРј РєСѓРїР»РµРЅРЅС‹Рµ РёРј РєСѓСЂСЃС‹*/
 SELECT course_name
 FROM v_user_data;
 
-/*представление, чтобы соотнести видео с курсом*/
+/*РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ, С‡С‚РѕР±С‹ СЃРѕРѕС‚РЅРµСЃС‚Рё РІРёРґРµРѕ СЃ РєСѓСЂСЃРѕРј*/
 CREATE OR REPLACE VIEW v_media_course AS
 	SELECT c.id, c.name, m.filename
 	FROM courses_media cm
@@ -75,7 +75,7 @@ CREATE OR REPLACE VIEW v_media_course AS
 SELECT name, filename FROM v_media_course;
 
 
-/*выборка курсов по группе учащихся*/
+/*РІС‹Р±РѕСЂРєР° РєСѓСЂСЃРѕРІ РїРѕ РіСЂСѓРїРїРµ СѓС‡Р°С‰РёС…СЃСЏ*/
 DROP PROCEDURE IF EXISTS group_course; 
 CREATE PROCEDURE group_course(group_id BIGINT)
 BEGIN
@@ -94,7 +94,7 @@ END;
 CALL group_course(5);
 
 
-/*выборка страницы курса*/
+/*РІС‹Р±РѕСЂРєР° СЃС‚СЂР°РЅРёС†С‹ РєСѓСЂСЃР°*/
 DROP PROCEDURE IF EXISTS comments_lesson;
 CREATE PROCEDURE comments_lesson(lesson_id BIGINT)
 BEGIN
@@ -102,7 +102,7 @@ BEGIN
 		FROM courses_media cm
 		JOIN media m ON m.id = cm.media_id 
 		JOIN comments c ON m.id = c.media_id 
-		LEFT JOIN likes l ON l.comment_id = c.id 		-- left join для того, чтобы в выборке участвовали комментарии, которые не показались полезными по мнению пользователей ресурса
+		LEFT JOIN likes l ON l.comment_id = c.id 		-- left join РґР»СЏ С‚РѕРіРѕ, С‡С‚РѕР±С‹ РІ РІС‹Р±РѕСЂРєРµ СѓС‡Р°СЃС‚РІРѕРІР°Р»Рё РєРѕРјРјРµРЅС‚Р°СЂРёРё, РєРѕС‚РѕСЂС‹Рµ РЅРµ РїРѕРєР°Р·Р°Р»РёСЃСЊ РїРѕР»РµР·РЅС‹РјРё РїРѕ РјРЅРµРЅРёСЋ РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№ СЂРµСЃСѓСЂСЃР°
 	GROUP BY c.id 
 	HAVING cm.course_id = lesson_id
 	ORDER BY m.filename;
